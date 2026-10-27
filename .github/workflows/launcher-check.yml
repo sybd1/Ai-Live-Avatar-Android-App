@@ -1,0 +1,27 @@
+name: Windows launcher check
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows-launcher:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Validate Windows PowerShell 5 bootstrap
+        shell: powershell
+        run: |
+          $tokens=$null; $parseErrors=$null
+          [Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD 'scripts/bootstrap.ps1'),[ref]$tokens,[ref]$parseErrors) | Out-Null
+          if($parseErrors){throw ($parseErrors | Out-String)}
+          if([IO.File]::ReadAllBytes((Join-Path $PWD 'scripts/bootstrap.ps1'))[0] -ne 239){throw 'PS5 bootstrap requires UTF-8 BOM'}
+      - name: Validate runtime scripts and target safety
+        shell: pwsh
+        run: |
+          Get-ChildItem scripts/*.ps1 | ForEach-Object {
+            $tokens=$null; $parseErrors=$null
+            [Management.Automation.Language.Parser]::ParseFile($_.FullName,[ref]$tokens,[ref]$parseErrors) | Out-Null
+            if($parseErrors){throw ($parseErrors | Out-String)}
+          }
+          ./scripts/test-android-runtime.ps1

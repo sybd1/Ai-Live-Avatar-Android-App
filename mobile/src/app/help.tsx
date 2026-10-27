@@ -1,0 +1,3 @@
+import { Linking } from 'react-native';
+import { Body,Button,Card,Screen,Title,openOfficial } from '@/components/mvp';
+export default function Help(){return <Screen><Title>도움이 필요할 때</Title><Card><Body>연습을 멈추거나 오늘은 여기까지 해도 괜찮아요. AI 연습은 전문 상담이나 응급 도움을 대신하지 않아요.</Body></Card><Body>즉시 위험이 있으면 112 또는 119에 연락할 수 있어요. 자살예방 상담은 109에서 안내받을 수 있어요.</Body><Button title="109 전화 앱 열기" onPress={()=>void Linking.openURL('tel:109')}/><Button title="119 전화 앱 열기" secondary onPress={()=>void Linking.openURL('tel:119')}/><Button title="보건복지부 공식 도움 안내" secondary onPress={()=>void openOfficial('https://www.mohw.go.kr/menu.es?mid=a10716040000')}/><Body>번호 안내 확인: 2026.10.24 · 전화는 사용자가 선택해서 연결해요.</Body></Screen>;}

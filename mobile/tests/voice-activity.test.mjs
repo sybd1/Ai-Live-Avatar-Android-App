@@ -1,0 +1,8 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {VoiceActivity} from '../src/lib/voice-activity.ts';
+const frame=(loud,rate=16000)=>{const bytes=new ArrayBuffer(rate/10*2),v=new DataView(bytes);for(let i=0;i<bytes.byteLength;i+=2)v.setInt16(i,loud?(i%4?900:-900):0,true);return {data:bytes,sampleRate:rate,channels:1};};
+test('continuous silence never creates a request',()=>{const vad=new VoiceActivity();for(let i=0;i<400;i++)assert.equal(vad.push(frame(false)),null);});
+test('speech keeps a pre-roll and one valid WAV, then waits for the next voice',()=>{const vad=new VoiceActivity();for(let i=0;i<5;i++)vad.push(frame(false));for(let i=0;i<8;i++)assert.equal(vad.push(frame(true)),null);let output;for(let i=0;i<18;i++)output=vad.push(frame(false));assert.ok(output);assert.equal(new TextDecoder().decode(output.wav.slice(0,4)),'RIFF');assert.equal(new DataView(output.wav.buffer).getUint32(24,true),16000);assert.ok(output.duration>2);for(let i=0;i<20;i++)assert.equal(vad.push(frame(false)),null);});
+test('pause discards partial speech; a noise click is not a full utterance',()=>{const vad=new VoiceActivity();vad.push(frame(true));vad.reset();for(let i=0;i<25;i++)assert.equal(vad.push(frame(false)),null);vad.push(frame(true));for(let i=0;i<18;i++)assert.equal(vad.push(frame(false)),null);});
+test('hardware sample-rate change does not mix PCM formats',()=>{const vad=new VoiceActivity();for(let i=0;i<8;i++)vad.push(frame(true));let out;for(let i=0;i<8;i++)vad.push(frame(true,48000));for(let i=0;i<18;i++)out=vad.push(frame(false,48000));assert.ok(out);assert.equal(new DataView(out.wav.buffer).getUint32(24,true),48000);});

@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "one_step_service",
+    "slug": "one_step_service",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "firststep",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "icon": "./assets/expo.icon"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "kr.ongi.firststep"
+    },
+    "web": {
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "가상 상황을 음성으로 연습할 때만 마이크를 사용해요.",
+          "enableBackgroundRecording": false,
+          "enableBackgroundPlayback": false
+        }
+      ],
+      "./plugins/with-mvp-network.cjs"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "platforms": [
+      "android"
+    ]
+  }
+}

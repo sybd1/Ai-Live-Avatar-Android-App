@@ -1,0 +1,111 @@
+[
+  {
+    "id": "7b8c0033-3677-4b07-9465-5f5bce34a2c7",
+    "versionId": "925d340c-64a4-4c69-a5a4-0ee48ca9de5b",
+    "title": "따뜻한 집",
+    "organizer": "서울청년기지개센터 공식 프로그램 목록",
+    "officialUrl": "https://www.siryc.or.kr/user/index.asp",
+    "verifiedAt": "2026-10-24T14:00:00Z",
+    "recruitmentStatus": "open",
+    "applicationStart": "2026-10-16",
+    "applicationEnd": "2026-11-18",
+    "publicationStatus": "published",
+    "synthetic": false,
+    "interests": [],
+    "modes": [
+      "오프라인"
+    ],
+    "concerns": [
+      "첫 인사",
+      "도움 요청"
+    ],
+    "minAge": null,
+    "maxAge": null,
+    "region": null,
+    "barriers": {
+      "selection": null,
+      "documents": null,
+      "cost": null,
+      "prework": null,
+      "eligibility": null
+    },
+    "facts": [
+      {
+        "id": "c48502e2-a710-4535-827f-10f439730c2f",
+        "field": "activityDate",
+        "value": "활동 날짜는 2026년 11월 19일이에요. 정확한 시각은 확인이 필요해요.",
+        "quote": "따뜻한 집 일정 : 2026.11.19(목)",
+        "sourceUrl": "https://www.siryc.or.kr/user/index.asp",
+        "locator": "홈페이지 기지개 정거장 / 따뜻한 집 카드",
+        "status": "verified"
+      },
+      {
+        "id": "262023a2-4ddf-4333-b99c-782a51505d74",
+        "field": "applicationWindow",
+        "value": "접수 기간은 2026년 10월 16일부터 11월 18일까지로 안내되어 있어요. 마감 시각은 확인이 필요해요.",
+        "quote": "접수 : 2026.10.16(금)~11.18(수)",
+        "sourceUrl": "https://www.siryc.or.kr/user/index.asp",
+        "locator": "홈페이지 기지개 정거장 / 따뜻한 집 카드",
+        "status": "verified"
+      },
+      {
+        "id": "b88b1175-cbaf-46ce-8148-a1233aff6f50",
+        "field": "place",
+        "value": "공식 목록에 안내된 활동 장소는 신길종합사회복지관 3층 성장교실 2예요.",
+        "quote": "장소 : 신길종합사회복지관 3층 성장교실 2",
+        "sourceUrl": "https://www.siryc.or.kr/user/index.asp",
+        "locator": "홈페이지 기지개 정거장 / 따뜻한 집 카드",
+        "status": "verified"
+      },
+      {
+        "id": "3af8a93b-da48-49c7-9d3d-d7c18aeca72f",
+        "field": "placeRoad",
+        "value": "활동 기관의 도로명 주소는 서울 영등포구 영등포로84길 24-5예요.",
+        "quote": "소재지 주소 서울 영등포구 영등포로84길 24-5 신길종합사회복지관 3층",
+        "sourceUrl": "https://together.kakao.com/fundraisings/teams/4485",
+        "locator": "기관이 등록한 주요 정보 / 소재지 주소",
+        "status": "verified"
+      }
+    ],
+    "occurrences": [
+      {
+        "id": "1ff46687-8b56-4a14-acb9-15f328fae505",
+        "title": "2026년 11월 19일 · 시각 확인 필요",
+        "address": "서울 영등포구 영등포로84길 24-5 · 신길종합사회복지관 3층 성장교실 2",
+        "longitude": 126.92143176024,
+        "latitude": 37.511138014791,
+        "placeFactIds": [
+          "b88b1175-cbaf-46ce-8148-a1233aff6f50",
+          "3af8a93b-da48-49c7-9d3d-d7c18aeca72f"
+        ],
+        "timeline": [
+          {
+            "id": "50523666-5625-4448-8028-0e37f15ce71c",
+            "title": "따뜻한 집 프로그램",
+            "orderIndex": null,
+            "time": "2026-11-19 · 정확한 시각 확인 필요",
+            "factIds": [
+              "c48502e2-a710-4535-827f-10f439730c2f"
+            ]
+          }
+        ],
+        "preparations": [
+          {
+            "label": "현장 준비물",
+            "kind": "unknown",
+            "factIds": []
+          }
+        ],
+        "unknowns": [
+          "참여 자격·대상",
+          "정확한 시작·종료 시각",
+          "접수·활동의 세부 순서",
+          "세부 활동 내용·정원",
+          "필수·권장 준비물",
+          "신청 절차·선발 방식·비용",
+          "실제 담당자 응대·출입 안내"
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,71 @@
+[
+  {
+    "id": "52f4ba62-068a-4496-be79-513cbff374fd",
+    "versionId": "fa3ceea3-ad36-4102-8dd4-7176cc885603",
+    "title": "기능 검증용 가상 프로그램",
+    "organizer": "시연 전용 가상 기관",
+    "officialUrl": "https://example.org/demo-only",
+    "verifiedAt": "2026-10-24T14:00:00Z",
+    "recruitmentStatus": "open",
+    "applicationStart": "2026-10-01",
+    "applicationEnd": "2026-12-31",
+    "publicationStatus": "published",
+    "synthetic": true,
+    "interests": [
+      "요리"
+    ],
+    "modes": [
+      "오프라인"
+    ],
+    "concerns": [
+      "첫 인사"
+    ],
+    "minAge": 19,
+    "maxAge": 39,
+    "region": "서울",
+    "barriers": {
+      "selection": 0,
+      "documents": 0,
+      "cost": 0,
+      "prework": null,
+      "eligibility": 1
+    },
+    "facts": [
+      {
+        "id": "77d84f4c-86ab-4b4e-a14a-07b0268cec4d",
+        "field": "activity",
+        "value": "가상 프로그램은 요리 활동을 연습하는 테스트 자료예요.",
+        "quote": "가상 프로그램은 요리 활동을 연습하는 테스트 자료예요.",
+        "sourceUrl": "https://example.org/demo-only",
+        "locator": "검증용 fixture",
+        "status": "verified"
+      }
+    ],
+    "occurrences": [
+      {
+        "id": "e3a0ee49-22f8-4c25-98d4-cc0091e743c2",
+        "title": "기능 검증용 회차",
+        "address": null,
+        "longitude": null,
+        "latitude": null,
+        "placeFactIds": [],
+        "timeline": [
+          {
+            "id": "564eec89-c85c-4262-905d-0f98d3a24bfa",
+            "title": "가상 요리 활동",
+            "orderIndex": null,
+            "time": null,
+            "factIds": [
+              "77d84f4c-86ab-4b4e-a14a-07b0268cec4d"
+            ]
+          }
+        ],
+        "preparations": [],
+        "unknowns": [
+          "이 자료는 실제 공고가 아님",
+          "실제 장소·순서·준비물 없음"
+        ]
+      }
+    ]
+  }
+]
