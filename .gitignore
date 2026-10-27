@@ -31,3 +31,5 @@ verification/*.xml
 
 .vercel/
 .vercel-cache/
+.agents/
+skills-lock.json

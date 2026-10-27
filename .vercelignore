@@ -1,5 +1,7 @@
 .git
 .tools
+.agents
+skills-lock.json
 .venv
 .env*
 mobile
