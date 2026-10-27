@@ -27,7 +27,8 @@ public class LiveVoice implements WebSocketConfigurer {
     final Map<String,Bridge> bridges=new ConcurrentHashMap<>();
     LiveVoice(Sessions sessions,ProgramRepository programs,Settings config,Gemini ai,ResponseGuard guard){this.sessions=sessions;this.programs=programs;this.config=config;this.ai=ai;this.guard=guard;}
     @Override public void registerWebSocketHandlers(WebSocketHandlerRegistry registry){
-        registry.addHandler(new Handler(),"/api/v1/practices/*/live").setAllowedOriginPatterns("http://127.0.0.1:*","http://10.0.2.2:*");
+        String[] origins=Arrays.stream(config.text("LIVE_ALLOWED_ORIGINS","http://127.0.0.1:*,http://10.0.2.2:*").split(",")).map(String::trim).filter(value->!value.isEmpty()).toArray(String[]::new);
+        registry.addHandler(new Handler(),"/api/v1/practices/*/live").setAllowedOriginPatterns(origins);
     }
     @PreDestroy public void dispose(){bridges.values().forEach(Bridge::close);work.close();}
     class Handler extends TextWebSocketHandler {
