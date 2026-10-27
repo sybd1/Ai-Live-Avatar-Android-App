@@ -1,0 +1,12 @@
+.git
+.tools
+.venv
+.env*
+mobile
+stt-worker
+artifacts
+distribution
+docs
+verification
+scripts
+*.bat

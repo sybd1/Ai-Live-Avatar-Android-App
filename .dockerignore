@@ -1,0 +1,12 @@
+**
+!Dockerfile
+!server/
+!server/**
+!data/
+!data/programs.json
+**/.git
+**/.env*
+**/target
+**/*.log
+**/*.jks
+**/*.keystore

@@ -31,6 +31,3 @@ verification/*.xml
 
 .vercel/
 .vercel-cache/
-
-.vercel/
-.vercel-cache/

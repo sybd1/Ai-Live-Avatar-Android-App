@@ -10,7 +10,7 @@ export default function Welcome() {
   return <Screen><Title>내 속도로, 한 걸음</Title><Body>참여하고 싶은 프로그램을 살펴보고, 가기 전에 알아보고 연습해요. 둘러보기만 해도 괜찮아요.</Body>
     <Card><Body>가상 사용자 전용 MVP 시연이에요. 실제 개인 사연·이름·연락처를 입력하지 마세요. 실제 정보와 가상 연습을 구분해서 표시해요.</Body></Card>
     <Field label="시연 서버 주소" value={server} onChangeText={setServer} keyboardType="url" />
-    <Body>에뮬레이터: http://10.0.2.2:8080 / USB와 adb reverse 사용 시: http://127.0.0.1:8080. 공개 운영에는 HTTPS가 필요해요.</Body>
+    <Body>{getBaseUrl().startsWith('https://')?'온라인 시연 서버에 연결해요. 서버 주소는 기본값을 유지해 주세요.':'에뮬레이터: http://10.0.2.2:8080 / USB와 adb reverse 사용 시: http://127.0.0.1:8080. 공개 운영에는 HTTPS가 필요해요.'}</Body>
     <Check label="가상 인물로 시연하며 개인정보를 입력하지 않겠어요" checked={synthetic} onChange={setSynthetic} />
     <Check label="녹음·음성 인식 처리에 동의해요 (선택)" checked={voice} onChange={setVoice} />
     <Body>음성 연습은 우리 서버를 통해 Gemini Live로 음성을 전송해요. 대체 경로에서는 우리 음성 인식 서버가 인식한 발화를 Gemini로 보내요. 발화마다 전송 버튼을 누르지 않아요. 무료 Gemini의 데이터 이용 조건이 적용돼요. 가상 대사만 말해 주세요.</Body>

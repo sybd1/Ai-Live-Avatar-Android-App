@@ -1,4 +1,8 @@
-param([ValidateSet('x86_64','arm64-v8a','arm64-v8a,x86_64')][string]$Architectures='x86_64',[ValidateSet('http://10.0.2.2:8080','http://127.0.0.1:8080')][string]$ApiBaseUrl='http://10.0.2.2:8080')
+param([ValidateSet('x86_64','arm64-v8a','arm64-v8a,x86_64')][string]$Architectures='x86_64',[ValidateScript({
+ if($_ -in @('http://10.0.2.2:8080','http://127.0.0.1:8080')){return $true}
+ $targetUri=$null
+ return [Uri]::TryCreate($_,[UriKind]::Absolute,[ref]$targetUri) -and $targetUri.Scheme -eq 'https' -and !$targetUri.UserInfo -and !$targetUri.Query -and !$targetUri.Fragment -and $targetUri.AbsolutePath -eq '/'
+})][string]$ApiBaseUrl='http://10.0.2.2:8080')
 . "$PSScriptRoot\env.ps1"
 $env:ANDROID_HOME = Join-Path $projectRoot '.tools\android-sdk'
 $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
