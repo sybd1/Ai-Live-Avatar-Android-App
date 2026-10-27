@@ -1,5 +1,9 @@
 # 한 걸음 · AI Live Avatar Android App
 
+**[온라인 앱 다운로드](https://ai-live-avatar-android-app.vercel.app)** · **[Android APK 바로 받기](https://github.com/sybd1/Ai-Live-Avatar-Android-App/releases/latest/download/one_step_service-online.apk)**
+
+온라인 APK는 PC·USB·개인 API 키 입력 없이 시연 서버에 접속합니다. Android ARM64 휴대폰에서 설치한 뒤 기본 서버 주소를 유지하세요. 가상 사용자 전용이며 공용 무료 시연 한도가 적용됩니다.
+
 고립·은둔 청년이 지원 프로그램의 일정과 준비물을 확인하고, 첫 참여 전에 AI 아바타와 대화를 연습하는 Android MVP입니다. 현재는 **가상 사용자 전용 시연**입니다. 실제 개인 사연·이름·연락처는 입력하지 않습니다.
 
 ## 프로젝트 구성
@@ -38,9 +42,9 @@ APK를 `artifacts/one_step_service-phone.apk`로 복사하면 `휴대폰실행.b
 
 ## 로컬 시연과 온라인 배포
 
-현재 APK는 PC 서버와 USB 포트 전달을 사용하는 로컬 시연용입니다. APK만 설치해서 PC 없이 AI 대화를 사용할 수 있는 상태는 아닙니다.
+온라인 APK의 기본 서버는 `https://ai-live-avatar-android-app.vercel.app`입니다. 로컬 개발용 APK는 PC 서버와 USB 포트 전달을 사용합니다.
 
-PC 없이 사용하려면 온라인 API 서버·DB를 마련하고 앱을 해당 HTTPS 주소에 연결해야 합니다. Vercel 서버 배포와 온라인 연결 APK는 별도 검증 대상입니다. Android 앱이 곧바로 브라우저용 웹 앱이 되는 것은 아닙니다.
+Java 서버는 Vercel, 공식 공고·사용량 카운터는 무료 Neon PostgreSQL에 연결했습니다. 공개 HTTPS와 Android Origin의 실시간 음성, 공식 근거 안내, 쉬기·종료, 세션 격리 검사를 통과했습니다. 웹페이지는 앱 다운로드 안내이며 브라우저용 앱은 제공하지 않습니다. [온라인 배포 구성과 제한](docs/ONLINE_DEPLOYMENT.md).
 
 ## 최근 수정과 남은 확인
 
@@ -48,7 +52,7 @@ PC 없이 사용하려면 온라인 API 서버·DB를 마련하고 앱을 해당
 - 위기 표현은 일반 연습 대사와 분리해 검토된 안내문·음성으로 전달합니다. 안내 재생이 끝난 뒤 도움 화면으로 이동하며, 이용자가 쉬기·종료를 누르면 즉시 중단합니다.
 - 앱 테스트 18개, 서버 도메인·음성 테스트 18개, TypeScript 검사를 통과했습니다. 실제 음성 API에서 위기 안내 전체 WAV와 연결 유지를 확인했습니다. 휴대폰에서의 최종 청취 확인은 남아 있습니다.
 - 내부 기본 제한은 AI 요청 하루 100회, Live 입력·출력 합계 하루 600초, 별도 TTS 월 10,000자입니다. 공급자 한도와 별개이며 자동 유료 전환하지 않습니다. 무음 전송도 Live 사용량에 포함됩니다.
-- API 한도와 무관하게 재생되는 오프라인 위기 안내 음성, 자동 모델 대체, 클라우드 DB·서버 연결은 아직 구현 완료로 표시하지 않습니다.
+- API 한도와 무관하게 재생되는 오프라인 위기 안내 음성과 자동 모델 대체는 남은 과제입니다. Vercel 무료 연결은 최대 5분이며, 연결이 끝나면 이용자가 다시 시작해야 합니다.
 
 공식 공고는 승인된 ‘따뜻한 집’ 1건입니다. 시간·준비물 등 확인되지 않은 항목은 ‘확인 필요’로 표시합니다. [공고 근거](data/warm-home-source.md), [남은 기능](docs/FEATURE_BACKLOG.md).
 
