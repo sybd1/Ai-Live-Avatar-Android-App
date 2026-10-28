@@ -25,8 +25,10 @@ let avatar:TalkingAvatar|null=null;let audio:ArrayBuffer|null=null;let serial=0;
 const button=document.getElementById('play') as HTMLButtonElement;
 const message=document.getElementById('message')!;
 const audioOnly=new URLSearchParams(location.search).get('audioOnly')==='1';
+const nativeAudio=new URLSearchParams(location.search).get('nativeAudio')==='1';
 const streamDelayMs=150;
 const pcm=new PcmPlayback({
+ muted:nativeAudio,
  createContext:()=>new AudioContext({sampleRate:24000,latencyHint:'interactive'}),
  sink:audioOnly?undefined:{attach:async stream=>{if(!avatar)throw new Error('Avatar not ready');await avatar.attachStream(stream);},detach:()=>avatar?.detachStream(),tailSeconds:streamDelayMs/1000},
  onStart:()=>{(window as any).__firstStepAvatarSpeaking=true;bridge('STREAM_STARTED');},
@@ -53,7 +55,14 @@ function receive(event:MessageEvent){
   if(data.type==='LOAD_AUDIO'&&typeof data.base64==='string'&&data.base64.length<=6_700_000){serial++;stopStream();avatar?.stopSpeaking();const bytes=Uint8Array.from(atob(data.base64),c=>c.charCodeAt(0));audio=bytes.buffer;button.disabled=false;message.textContent='공식 안내 또는 가상 예시를 말해요.';if(data.autoplay===true)void speak();}
  }catch(error){reportError(error);}
 }
-async function speak(){if(!avatar||!audio)return;const current=++serial;button.disabled=true;(window as any).__firstStepAvatarSpeaking=true;bridge('STARTED');try{await avatar.speak(audio);if(current===serial)bridge('ENDED');}catch(error){reportError(error);}finally{if(current===serial){(window as any).__firstStepAvatarSpeaking=false;button.disabled=false;}}}
+async function speak(){if(!avatar||!audio)return;const current=++serial;button.disabled=true;(window as any).__firstStepAvatarSpeaking=true;bridge('STARTED');try{if(nativeAudio){
+ const decoder=new AudioContext({sampleRate:24000});
+ try{const decoded=await decoder.decodeAudioData(audio.slice(0));if(current!==serial)return;
+ const samples=decoded.getChannelData(0),id='wav-'+current;
+ for(let offset=0;offset<samples.length;offset+=3840){const count=Math.min(3840,samples.length-offset),bytes=new Uint8Array(count*2),view=new DataView(bytes.buffer);for(let i=0;i<count;i++)view.setInt16(i*2,Math.round(Math.max(-1,Math.min(1,samples[offset+i]))*32767),true);let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);pcm.append(btoa(binary),id);await new Promise(resolve=>setTimeout(resolve,0));if(current!==serial)return;}
+ pcm.finish(id);
+ }finally{void decoder.close();}
+ }else await avatar.speak(audio);if(current===serial)bridge('ENDED');}catch(error){reportError(error);}finally{if(current===serial){(window as any).__firstStepAvatarSpeaking=false;button.disabled=false;}}}
 button.onclick=()=>void speak();
 window.addEventListener('message',receive);document.addEventListener('message',receive as EventListener);
 document.addEventListener('visibilitychange',()=>{if(document.hidden){serial++;stopStream();(window as any).__firstStepAvatarSpeaking=false;avatar?.stopSpeaking();audio=null;bridge('STOPPED');}});

@@ -1,6 +1,6 @@
 # 온라인 Android 시연 배포
 
-2026-10-27 배포 확인. 서버·다운로드 페이지: https://ai-live-avatar-android-app.vercel.app
+최초 온라인 배포: 2026-10-27. 음성 재생 수정: Android 1.0.1 (2026-10-28). 서버·다운로드 페이지: https://ai-live-avatar-android-app.vercel.app
 
 Android 설치 파일은 [GitHub Releases](https://github.com/sybd1/Ai-Live-Avatar-Android-App/releases/latest)에서 `one_step_service-online.apk`를 받습니다.
 
@@ -29,3 +29,15 @@ Vercel Container Runtime을 사용합니다. `PORT`와 `SERVER_PORT`는 `8080`, 
 - 기본 공개 API는 가상 사용자 시연용입니다. 실제 이용자 운영에 필요한 계정·접근 정책과 장기 보관 기능은 별도 범위입니다.
 
 근거: [Vercel Container Runtime](https://vercel.com/docs/functions/runtimes/container), [WebSocket 연결](https://vercel.com/docs/functions/websockets), [실행 시간 제한](https://vercel.com/docs/functions/configuring-functions/duration).
+
+## Android 1.0.1 음성 수정
+
+앱 업데이트가 필요합니다. 서버 배포만으로 설치된 1.0.0 APK의 WebView 재생기를 교체할 수 없습니다. Releases에서 새 `one_step_service-online.apk`를 받아 기존 앱 위에 설치합니다.
+
+`mobile/modules/one-step-audio/`는 프로젝트에 포함한 Android 네이티브 모듈입니다. Expo가 로컬 모듈을 자동 연결합니다. PCM·WAV 디코딩과 쓰기는 전용 오디오 스레드에서 실행하고, 재생 완료는 실제 AudioTrack 재생 위치로 확인합니다. React 화면 갱신·아바타 렌더링과 음성 재생을 분리했습니다.
+
+Gemini Live 설정의 `realtimeInputConfig.activityHandling`을 `NO_INTERRUPTION`으로 지정하고, 클라이언트도 스피커 재생 중 마이크 전송을 무음으로 바꿉니다. 답변이 끝나면 다시 말할 수 있습니다. 말하는 도중 끼어들기로 AI를 중단하는 기능은 제공하지 않으며, 쉬기·종료 버튼은 즉시 작동합니다. [Google Live API 설정 근거](https://ai.google.dev/api/live#RealtimeInputConfig).
+
+연결·할당량 오류가 오면 이미 수신한 음성은 재생한 뒤 오류를 표시합니다. 아직 받지 못한 음성은 복구하지 못합니다. 무료 한도·연결 시간 제한은 그대로입니다.
+
+이번 수정의 대화·휴대폰 청취 테스트는 사용자가 직접 진행합니다. 빌드 성공과 배포 완료를 실제 청취 검증으로 해석하지 않습니다.

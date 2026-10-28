@@ -5,6 +5,7 @@ type Sink = {
 };
 type Options = {
  createContext:()=>AudioContext;
+ muted?:boolean;
  sink?:Sink;
  onStart:()=>void;
  onEnd:()=>void;
@@ -43,7 +44,7 @@ export class PcmPlayback {
      // the lip-sync SDK's second context must never be the only speaker path.
      const delay=context.createDelay(Math.max(1,this.options.sink.tailSeconds*2));
      delay.delayTime.value=this.options.sink.tailSeconds;
-     delay.connect(context.destination);this.audible=delay;
+     if(!this.options.muted)delay.connect(context.destination);this.audible=delay;
      this.destination=context.createMediaStreamDestination();
      await this.options.sink.attach(this.destination.stream);
      if(expected!==this.generation)return;
@@ -60,7 +61,7 @@ export class PcmPlayback {
    if(at-context.currentTime>20)throw new Error('Live audio queue exceeded');
    this.next=at+buffer.duration;
    const source=context.createBufferSource();source.buffer=buffer;
-   source.connect(this.audible??context.destination);
+   if(this.audible)source.connect(this.audible);else if(!this.options.muted)source.connect(context.destination);
    if(this.destination)source.connect(this.destination);
    source.onended=()=>{this.sources.delete(source);source.disconnect();this.maybeEnd(expected);};
    this.sources.add(source);source.start(at);

@@ -8,6 +8,7 @@ import {Avatar,type AvatarHandle} from './Avatar';
 import {audioBase64,createLiveSocket,hasVoiceConsent,post,request,requestId} from '@/lib/api';
 import {Generation} from '@/lib/generation';
 import {GuidancePlayback} from '@/lib/guidance-playback';
+import {nativeOutput} from '@/lib/native-playback';
 import {VoiceActivity,type Utterance} from '@/lib/voice-activity';
 import type {Practice,Program,Turn} from '@/lib/types';
 
@@ -23,16 +24,21 @@ export default function ContinuousPractice(){
  const playbackTimer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),controls=useRef<Promise<unknown>>(Promise.resolve()),consume=useRef<(u:Utterance)=>void>(()=>{});
  const player=useAudioPlayer(null),playerStatus=useAudioPlayerStatus(player);
  const liveSocket=useRef<WebSocket|null>(null);
+ const nativeSession=useRef(''),outputTurn=useRef(''),outputBusy=useRef(false),echoUntil=useRef(0),deferredFailure=useRef('');
+ function ensureOutput(){if(!nativeSession.current&&nativeOutput){nativeSession.current=requestId();nativeOutput.start(nativeSession.current);}return nativeSession.current;}
+ function stopOutput(){const session=nativeSession.current;nativeSession.current='';outputBusy.current=false;outputTurn.current='';echoUntil.current=0;if(session)nativeOutput?.stop(session);}
  const guidance=useRef(new GuidancePlayback()),fallbackRef=useRef(false);
  const {stream}=useAudioStream({sampleRate:16000,channels:1,encoding:'int16',onBuffer:frame=>{
   if(!listening.current||!running.current)return;
   if(liveSocket.current){const socket=liveSocket.current;if(socket.readyState!==WebSocket.OPEN)return;if(socket.bufferedAmount>128000){pause();setError('음성 전송이 밀려 잠시 멈췄어요. 연결을 확인하고 다시 시작할 수 있어요.');return;}
-   const bytes=new Uint8Array(frame.data);let binary='';for(let i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);socket.send(JSON.stringify({type:'audio',sampleRate:frame.sampleRate,data:btoa(binary)}));return;}
+   // Keep the provider's VAD clock running with silence while the speaker is active.
+   // Hardware AEC alone cannot reliably remove every phone's loudspeaker echo.
+   const bytes=outputBusy.current||Date.now()<echoUntil.current?new Uint8Array(frame.data.byteLength):new Uint8Array(frame.data);let binary='';for(let i=0;i<bytes.length;i++)binary+=String.fromCharCode(bytes[i]);socket.send(JSON.stringify({type:'audio',sampleRate:frame.sampleRate,data:btoa(binary)}));return;}
   const u=vad.current.push(frame);if(u){listening.current=false;stream.stop();consume.current(u);}
  }});
  function clean(ref:{current:File|null}){try{if(ref.current?.exists)ref.current.delete();}catch{}ref.current=null;}
  function stopLocal(next:Status='paused'){
-  guidance.current.cancel();
+  guidance.current.cancel();stopOutput();deferredFailure.current='';
   running.current=false;listening.current=false;processing.current=false;starting.current=false;generation.current.invalidate();controller.current?.abort();vad.current.reset();stream.stop();
   const socket=liveSocket.current;liveSocket.current=null;if(socket){socket.onmessage=null;socket.onclose=null;socket.onerror=null;socket.close();}
   if(playbackTimer.current)clearTimeout(playbackTimer.current);playbackTimer.current=undefined;
@@ -71,7 +77,12 @@ export default function ContinuousPractice(){
  function connectLive(captured:number){return new Promise<void>((resolve,reject)=>{
   const socket=createLiveSocket(id);liveSocket.current=socket;let settled=false;
   const timer=setTimeout(()=>{if(!settled){settled=true;reject(new Error('실시간 음성 연결이 지연됐어요. 다시 시작할 수 있어요.'));socket.close();}},12000);
-  const fail=(message:string)=>{clearTimeout(timer);if(!settled){settled=true;reject(new Error(message));}else if(liveSocket.current===socket){stopLocal();setError(message);void control('pause').catch(()=>{});}};
+  const fail=(message:string)=>{clearTimeout(timer);if(!settled){settled=true;reject(new Error(message));}else if(liveSocket.current===socket){
+   if(nativeOutput&&outputBusy.current&&!guidance.current.pending){
+    // A transport/quota error must not discard sound already received.
+    deferredFailure.current=message;listening.current=false;stream.stop();liveSocket.current=null;socket.onclose=null;socket.onerror=null;socket.onmessage=null;socket.close();nativeOutput.finish(ensureOutput(),outputTurn.current);
+   }else{stopLocal();setError(message);void control('pause').catch(()=>{});}
+  }};
   socket.onmessage=event=>{if(!generation.current.isCurrent(captured)||liveSocket.current!==socket)return;
    try{if(typeof event.data!=='string'||event.data.length>6_800_000)throw Error();const data=JSON.parse(event.data);
     if(data.type==='ready'){clearTimeout(timer);settled=true;resolve();}
@@ -83,10 +94,10 @@ export default function ContinuousPractice(){
     if(data.type==='guidanceUnavailable'){stopLocal();setError(String(data.message));void control('pause').catch(()=>{});}
     if(data.type==='checking')setStatus('generating');
     if(data.type==='heard')setHeard(data.text??'');
-    if(data.type==='interrupted'&&!guidance.current.pending){console.info('[Voice] interrupted: '+String(data.reason??'policy_or_text'));avatar.current?.stop();player.pause();player.replace(null);savedAudio.current=null;clean(outputFile);if(playbackTimer.current)clearTimeout(playbackTimer.current);setStatus('listening');}
+    if(data.type==='interrupted'&&data.reason!=='provider_activity'&&!guidance.current.pending){stopOutput();console.info('[Voice] interrupted: '+String(data.reason??'policy_or_text'));avatar.current?.stop();player.pause();player.replace(null);savedAudio.current=null;clean(outputFile);if(playbackTimer.current)clearTimeout(playbackTimer.current);setStatus('listening');}
     if(data.type==='caption'&&!guidance.current.pending)setReply({turnId:data.utteranceId,kind:'roleplay',approvedText:data.text,factRefs:[],alternatives:[],generation:current.current?.generation??0,expectedTurn:current.current?.expectedTurn??0});
-    if(data.type==='audioChunk'&&!guidance.current.pending){if(typeof data.data!=='string'||data.data.length>300000)throw Error();avatar.current?.pcm(data.data,data.utteranceId);setStatus('playing');}
-    if(data.type==='speechEnd')avatar.current?.finishStream(data.utteranceId);
+    if(data.type==='audioChunk'&&!guidance.current.pending){if(typeof data.data!=='string'||data.data.length>300000)throw Error();outputTurn.current=data.utteranceId;outputBusy.current=true;if(nativeOutput)nativeOutput.append(ensureOutput(),data.utteranceId,data.data);avatar.current?.pcm(data.data,data.utteranceId);setStatus('playing');}
+    if(data.type==='speechEnd'){if(nativeOutput)nativeOutput.finish(ensureOutput(),data.utteranceId);avatar.current?.finishStream(data.utteranceId);}
     if(data.type==='control'){if(data.kind==='end')end();else{stopLocal();void control('pause').catch(()=>{});if(data.kind==='help')router.push('/help');}}
     if(data.type==='reply'){
      if(typeof data.audioBase64!=='string'||typeof data.approvedText!=='string')throw Error();
@@ -102,7 +113,7 @@ export default function ContinuousPractice(){
   guidance.current.announce(turn.turnId,turn.kind as 'help'|'guard');
   running.current=false;listening.current=false;processing.current=true;stream.stop();vad.current.reset();
   if(playbackTimer.current)clearTimeout(playbackTimer.current);playbackTimer.current=undefined;
-  avatar.current?.stop();player.pause();player.replace(null);savedAudio.current=null;clean(outputFile);
+  stopOutput();avatar.current?.stop();player.pause();player.replace(null);savedAudio.current=null;clean(outputFile);
   setReply(turn);setError('');setStatus('generating');
  }
  async function playbackEnded(){
@@ -119,6 +130,11 @@ export default function ContinuousPractice(){
   await setAudioModeAsync({allowsRecording:!!liveSocket.current&&!guidance.current.pending,shouldPlayInBackground:false,interruptionMode:'doNotMix'});
   if(!generation.current.isCurrent(captured)||pausedRef.current)return;
   savedAudio.current=base64;setStatus('playing');
+  if(nativeOutput){
+   const turnId=requestId();
+   outputTurn.current=turnId;outputBusy.current=true;nativeOutput.wav(ensureOutput(),turnId,base64);
+   avatar.current?.load(base64,true);return;
+  }
   playbackTimer.current=setTimeout(()=>{if(generation.current.isCurrent(captured)){stopLocal();setError('음성 재생 완료를 확인하지 못해 멈췄어요. 다시 시작할 수 있어요.');}},65000);
   if(!fallbackRef.current&&avatar.current){avatar.current.load(base64,true);return;}
   await playNative(base64,captured);
@@ -157,7 +173,7 @@ export default function ContinuousPractice(){
   finally{try{if(f?.exists)f.delete();}catch{}if(inputFile.current===f)inputFile.current=null;if(generation.current.isCurrent(captured))processing.current=false;}
  }
  function end(){if(ending.current)return;ending.current=true;stopLocal('ended');void control('end').catch(()=>{});router.replace({pathname:'/practice/check-in',params:{id,stage:'post',title:context?.program.title??'프로그램 연습'}});}
- function avatarError(){fallbackRef.current=true;setFallback(true);if(guidance.current.pending){
+ function avatarError(){fallbackRef.current=true;setFallback(true);if(nativeOutput)return;if(guidance.current.pending){
   if(savedAudio.current&&!pausedRef.current){const captured=generation.current.capture();void playNative(savedAudio.current,captured).catch(()=>{if(generation.current.isCurrent(captured)){stopLocal();setError('음성 안내를 재생하지 못했어요. 화면의 안내를 읽거나 도움 안내를 선택할 수 있어요.');}});}return;
  }if((running.current||savedAudio.current)&&!pausedRef.current){stopLocal();setError('아바타 연결을 확인하지 못해 음성을 멈췄어요. 단순 화면으로 다시 시작할 수 있어요.');}}
  async function textStart(input:string){
@@ -172,10 +188,24 @@ export default function ContinuousPractice(){
   const state=AppState.addEventListener('change',s=>{if(s!=='active')background();}),blur=AppState.addEventListener('blur',background),back=BackHandler.addEventListener('hardwareBackPress',()=>{pause();router.back();return true;});
   return()=>{mounted=false;alive.current=false;state.remove();blur.remove();back.remove();stopLocal();if(!ending.current)void control('pause').catch(()=>{});};
  },[id]);
+ useEffect(()=>{
+  if(!nativeOutput)return;
+  const subscription=nativeOutput.addListener('playback',event=>{
+   if(event.session!==nativeSession.current||pausedRef.current||!alive.current)return;
+   if(event.type==='error'){stopLocal();setError(event.message);void control('pause').catch(()=>{});return;}
+   if(event.type==='started'){if(guidance.current.pending)guidance.current.start();setStatus('playing');}
+   if(event.type==='ended'&&event.id===outputTurn.current){
+    outputBusy.current=false;echoUntil.current=Date.now()+250;
+    if(deferredFailure.current){const message=deferredFailure.current;stopLocal();setError(message);void control('pause').catch(()=>{});return;}
+    void playbackEnded();
+   }
+  });
+  return()=>subscription.remove();
+ },[id]);
  useEffect(()=>{if(playerStatus.didJustFinish&&!pausedRef.current)void playbackEnded();},[playerStatus.didJustFinish]);
  useEffect(()=>{if(playerStatus.playing)guidance.current.start();},[playerStatus.playing]);
  const busy=['starting','transcribing','generating','playing'].includes(status);
- return <Screen top={!paused&&!textMode?<Avatar key={`${avatarKey}-${fallback}`} audioOnly={fallback} ref={avatar} onError={avatarError} onState={s=>{if(s==='STARTED')guidance.current.start();if(s==='ENDED'&&!pausedRef.current)void playbackEnded();if(s==='STREAM_STARTED'&&!pausedRef.current&&!guidance.current.pending)setStatus('playing');if(s==='STREAM_ENDED'&&liveSocket.current&&!pausedRef.current&&!guidance.current.pending)setStatus('listening');}}/>:undefined} footer={<><Button title="멈추기 · 잠깐 쉬기" onPress={pause}/><Button title="오늘은 여기까지" secondary onPress={end}/></>}>
+ return <Screen top={!paused&&!textMode?<Avatar key={`${avatarKey}-${fallback}`} audioOnly={fallback} ref={avatar} onError={avatarError} onState={s=>{if(nativeOutput)return;if(s==='STARTED')guidance.current.start();if(s==='ENDED'&&!pausedRef.current)void playbackEnded();if(s==='STREAM_STARTED'&&!pausedRef.current&&!guidance.current.pending)setStatus('playing');if(s==='STREAM_ENDED'&&liveSocket.current&&!pausedRef.current&&!guidance.current.pending)setStatus('listening');}}/>:undefined} footer={<><Button title="멈추기 · 잠깐 쉬기" onPress={pause}/><Button title="오늘은 여기까지" secondary onPress={end}/></>}>
   <Title>{context?.program.title??'연습 준비'}</Title><Body>선택한 장면 속 가상 안내자와 하는 연습이에요. 실제 진행·직원의 반응과 다를 수 있어요.</Body>
   <Body>상태: {{ready:'준비됨',starting:'마이크 준비 중',listening:'듣고 있어요 · 편하게 말해 주세요',transcribing:'말씀을 확인하는 중',generating:'답변 생성·검증 중',playing:'아바타가 말하는 중',paused:'잠깐 쉬는 중',ended:'대화 종료'}[status]}</Body>
   {fallback&&<Card><Body>3D 대신 단순 화면으로 대화해요. 음성과 자막 기능은 계속 사용할 수 있어요.</Body></Card>}
