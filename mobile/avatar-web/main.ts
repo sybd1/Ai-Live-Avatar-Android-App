@@ -59,7 +59,7 @@ async function speak(){if(!avatar||!audio)return;const current=++serial;button.d
  const decoder=new AudioContext({sampleRate:24000});
  try{const decoded=await decoder.decodeAudioData(audio.slice(0));if(current!==serial)return;
  const samples=decoded.getChannelData(0),id='wav-'+current;
- for(let offset=0;offset<samples.length;offset+=3840){const count=Math.min(3840,samples.length-offset),bytes=new Uint8Array(count*2),view=new DataView(bytes.buffer);for(let i=0;i<count;i++)view.setInt16(i*2,Math.round(Math.max(-1,Math.min(1,samples[offset+i]))*32767),true);let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);pcm.append(btoa(binary),id);await new Promise(resolve=>setTimeout(resolve,0));if(current!==serial)return;}
+ for(let offset=0;offset<samples.length;offset+=3840){const count=Math.min(3840,samples.length-offset),bytes=new Uint8Array(count*2),view=new DataView(bytes.buffer);for(let i=0;i<count;i++)view.setInt16(i*2,Math.round(Math.max(-1,Math.min(1,samples[offset+i]))*32767),true);let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);pcm.append(btoa(binary),id);await new Promise(resolve=>setTimeout(resolve,count/24000*1000));if(current!==serial)return;}
  pcm.finish(id);
  }finally{void decoder.close();}
  }else await avatar.speak(audio);if(current===serial)bridge('ENDED');}catch(error){reportError(error);}finally{if(current===serial){(window as any).__firstStepAvatarSpeaking=false;button.disabled=false;}}}
