@@ -1,0 +1,14 @@
+{
+  "version": "1.0.1",
+  "versionCode": 2,
+  "architecture": "arm64-v8a",
+  "server": "https://ai-live-avatar-android-app.vercel.app",
+  "sha256": "d6f34756b96b81a57adff208529f7669be080268d64368b895b19cfedeaccd68",
+  "bytes": 68730843,
+  "nativeAudioTrackPresent": true,
+  "configuredSecretsAbsent": true,
+  "apkBuildPassed": true,
+  "typeScriptPassed": true,
+  "dialogueTestsRun": false,
+  "phoneTestsRun": false
+}

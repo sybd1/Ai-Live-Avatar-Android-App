@@ -1,0 +1,25 @@
+server:
+  address: ${SERVER_BIND_ADDRESS:127.0.0.1}
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+spring:
+  application:
+    name: one_step_service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://127.0.0.1:55432/firststep}
+    username: ${DATABASE_USERNAME:firststep}
+    password: ${DATABASE_PASSWORD:}
+  sql:
+    init:
+      mode: always
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+logging:
+  level:
+    root: INFO
+    org.springframework.web: WARN
+

@@ -1,0 +1,9 @@
+kr.ongi.audio.one-step-audio-pngs-0 P:\mobile\modules\one-step-audio\android\build\generated\res\pngs\release
+kr.ongi.audio.one-step-audio-updated_navigation_xml-1 P:\mobile\modules\one-step-audio\android\build\generated\updated_navigation_xml\release
+kr.ongi.audio.one-step-audio-mergeReleaseResources-2 P:\mobile\modules\one-step-audio\android\build\intermediates\incremental\release\mergeReleaseResources\merged.dir
+kr.ongi.audio.one-step-audio-mergeReleaseResources-3 P:\mobile\modules\one-step-audio\android\build\intermediates\incremental\release\mergeReleaseResources\stripped.dir
+kr.ongi.audio.one-step-audio-release-4 P:\mobile\modules\one-step-audio\android\build\intermediates\merged_res\release\mergeReleaseResources
+kr.ongi.audio.one-step-audio-release-5 P:\mobile\modules\one-step-audio\android\build\intermediates\packaged_res\release\packageReleaseResources
+kr.ongi.audio.one-step-audio-main-6 P:\mobile\modules\one-step-audio\android\src\main\res
+kr.ongi.audio.one-step-audio-release-7 P:\mobile\modules\one-step-audio\android\src\release\res
+gradleHome-0 P:\.tools\gradle-cache

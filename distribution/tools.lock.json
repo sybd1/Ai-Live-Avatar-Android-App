@@ -1,0 +1,31 @@
+{
+  "powershell": {
+    "checksumAlgorithm": "SHA256",
+    "bytes": 106353859,
+    "checksum": "b9f074f923c499b51ec99d313da8e9ae90d17a9f3adf00c73d6189f34d908528",
+    "url": "https://github.com/PowerShell/PowerShell/releases/download/v7.6.8/PowerShell-7.6.8-win-x64.zip",
+    "version": "v7.6.8"
+  },
+  "java": {
+    "checksumAlgorithm": "SHA256",
+    "bytes": 48999141,
+    "checksum": "d35f31e712f0fcf6ac5a093edc90204fbff22f720ba3950bd09d331d5e621636",
+    "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jre_x64_windows_hotspot_21.0.12.1_1.zip",
+    "version": "21.0.12+101.0.LTS"
+  },
+  "postgres": {
+    "checksumAlgorithm": "SHA256",
+    "bytes": 340719294,
+    "checksum": "6eabdf00d2893713b75db4336a23c3fdf505f056e217ec6e2e95d901750cfea3",
+    "url": "https://get.enterprisedb.com/postgresql/postgresql-17.11-1-windows-x64-binaries.zip",
+    "version": "17.11"
+  },
+  "adb": {
+    "license": "https://developer.android.com/studio/terms",
+    "url": "https://dl.google.com/android/repository/platform-tools_r37.0.1-win.zip",
+    "bytes": 8044989,
+    "version": "37.0.1",
+    "checksumAlgorithm": "SHA1",
+    "checksum": "e03e78b1d80b396f1c3358e31251cb31740e1110"
+  }
+}

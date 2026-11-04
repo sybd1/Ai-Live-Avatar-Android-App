@@ -1,0 +1,19 @@
+<lint-module
+    format="1"
+    dir="P:\mobile\modules\one-step-audio\android"
+    name=":one-step-audio"
+    type="LIBRARY"
+    maven="kr.ongi.audio:one-step-audio:1.0.0"
+    agpVersion="9.2.1"
+    buildFolder="build"
+    bootClassPath="P:\.tools\android-sdk\platforms\android-37.0\android.jar;P:\.tools\android-sdk\build-tools\36.0.0\core-lambda-stubs.jar"
+    javaSourceLevel="17"
+    compileTarget="android-37.0"
+    neverShrinking="true"
+    highlightGradualR8Api="false">
+  <lintOptions
+      absolutePaths="true"
+      checkReleaseBuilds="true"
+      explainIssues="true"/>
+  <variant name="release"/>
+</lint-module>

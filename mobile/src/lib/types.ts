@@ -1,0 +1,7 @@
+export type Fact = { id: string; field: string; value: string; quote: string; sourceUrl: string; locator: string; status: string };
+export type Occurrence = { id: string; title: string; address: string | null; longitude: number | null; latitude: number | null; placeFactIds: string[]; timeline: { id: string; title: string; orderIndex: number | null; time: string | null; factIds: string[] }[]; preparations: { label: string; kind: string; factIds: string[] }[]; unknowns: string[] };
+export type Program = { id: string; versionId: string; title: string; organizer: string; officialUrl: string; verifiedAt: string; recruitmentStatus: string; applicationStart: string | null; applicationEnd: string | null; synthetic: boolean; interests: string[]; modes: string[]; concerns: string[]; minAge: number | null; maxAge: number | null; region: string | null; facts: Fact[]; occurrences: Occurrence[] };
+export type Profile = { version: number; interests: string[]; modes: string[]; concerns: string[]; age: number | null; region: string | null };
+export type Practice = { practiceId: string; state: string; generation: number; expectedTurn: number; difficulty: string };
+export type Turn = { turnId: string; kind: string; approvedText: string; factRefs: Fact[]; alternatives: string[]; audioToken?: string; audioError?: string; generation: number; expectedTurn: number };
+export type Capabilities = { text: boolean; tts: boolean; stt: boolean; maps: boolean; policySync: boolean; syntheticOnly: boolean; demoMode: boolean; avatar: string;live?:boolean };

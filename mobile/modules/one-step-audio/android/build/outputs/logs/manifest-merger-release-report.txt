@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml:2:13-83
+INJECTED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml:2:13-83
+	package
+		INJECTED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml
+	xmlns:android
+		ADDED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml:2:23-81
+uses-sdk
+INJECTED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml reason: use-sdk injection requested
+INJECTED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml
+INJECTED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml
+	android:targetSdkVersion
+		INJECTED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml
+	android:minSdkVersion
+		INJECTED from P:\mobile\modules\one-step-audio\android\build\intermediates\tmp\ProcessLibraryManifest\release\tempAndroidManifest2203195936706453775.xml

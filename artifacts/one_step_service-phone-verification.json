@@ -1,0 +1,30 @@
+{
+  "file": "one_step_service-phone.apk",
+  "sha256": "f0879e1b2bacc6070597d621749deaa893d08d0fde3e28a94b97af3858ec7f64",
+  "bytes": 68728983,
+  "architectures": [
+    "arm64-v8a"
+  ],
+  "configuredServerSecretsAbsent": true,
+  "latestAvatarBundleIncluded": true,
+  "nativeEchoPatchIncluded": true,
+  "guidancePlaybackIncluded": true,
+  "appTestsPassed": 18,
+  "serverTestsPassed": 18,
+  "typecheckPassed": true,
+  "phoneAudibleGuidanceVerified": false,
+  "liveIntegration": {
+    "syntheticOnly": true,
+    "rawAudioAfterGuidance": 0,
+    "reviewedHelpAnnounced": true,
+    "sameTextSpoken": true,
+    "wavBytes": 1067876,
+    "validWav": true,
+    "socketOpenAfterAudio": true,
+    "contactNumbersPresent": true,
+    "passed": true
+  },
+  "phoneApkInstalled": true,
+  "serverRestartedWithFix": true,
+  "verifiedGuidanceAudioSeconds": 22.12
+}

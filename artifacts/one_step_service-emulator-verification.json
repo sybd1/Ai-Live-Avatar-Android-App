@@ -1,0 +1,9 @@
+{
+  "file": "one_step_service-emulator.apk",
+  "bytes": 70382319,
+  "sha256": "2b53e0a93e57f9b4896c2f4d899ef8c782c300e20677edc672c55d6aad21466f",
+  "architectures": [
+    "x86_64"
+  ],
+  "configuredServerSecretsAbsent": true
+}
