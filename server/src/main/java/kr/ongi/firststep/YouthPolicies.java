@@ -22,6 +22,7 @@ public class YouthPolicies {
     final HttpClient http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
     final JsonMapper json=JsonMapper.builder().build();
     final Map<String,Cached> cache=new ConcurrentHashMap<>();
+    static final org.slf4j.Logger log=org.slf4j.LoggerFactory.getLogger(YouthPolicies.class);
     public YouthPolicies(Settings config,Sessions sessions){this.config=config;this.sessions=sessions;}
     boolean ready(){return !config.text("YOUTH_POLICY_API_KEY","").isBlank();}
 
@@ -32,9 +33,11 @@ public class YouthPolicies {
         try {
             var req=HttpRequest.newBuilder(URI.create(config.text("POLICY_PROVIDER_BASE_URL",DEFAULT_URL)+"?"+query)).timeout(Duration.ofSeconds(12)).GET().build();
             var res=http.send(req,HttpResponse.BodyHandlers.ofString());
-            if(res.statusCode()!=200||res.body().length()>5_000_000)throw ApiError.of(503,"POLICY_UNAVAILABLE","청년정책 정보를 받지 못했어요. 잠시 뒤 다시 시도해 주세요.");
-            var body=json.readTree(res.body());
-            if(body.has("errorCode")||body.path("resultCode").asInt()!=200)throw ApiError.of(503,"POLICY_UNAVAILABLE","청년정책 제공 기관의 응답을 확인해야 해요.");
+            if(res.body().length()>5_000_000)throw ApiError.of(503,"POLICY_UNAVAILABLE","청년정책 정보를 받지 못했어요. 잠시 뒤 다시 시도해 주세요.");
+            JsonNode body;try{body=json.readTree(res.body());}catch(Exception e){body=json.createObjectNode();}
+            // The provider answers an invalid key with HTTP 403 and errorCode e001; other 403s are usually network blocks.
+            if(body.has("errorCode")){log.warn("youth policy provider error {} (HTTP {})",body.path("errorCode").asText(),res.statusCode());throw ApiError.of(503,"POLICY_UNAVAILABLE","청년정책 인증키를 확인해야 해요.");}
+            if(res.statusCode()!=200||body.path("resultCode").asInt()!=200){log.warn("youth policy provider HTTP {}",res.statusCode());throw ApiError.of(503,"POLICY_UNAVAILABLE","청년정책 정보를 받지 못했어요. 잠시 뒤 다시 시도해 주세요.");}
             return body.path("result");
         }catch(ApiError e){throw e;}catch(Exception e){throw ApiError.of(503,"POLICY_UNAVAILABLE","청년정책 연결에 문제가 있어요.");}
     }
