@@ -28,9 +28,11 @@ public class Api {
     @DeleteMapping("/sessions/current") @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@RequestHeader(value="Authorization",required=false) String auth){sessions.remove(auth);}
     @GetMapping("/capabilities") public Map<String,Object> capabilities() {
-        return Map.of("text",config.aiReady(),"tts",config.aiReady(),"stt",!config.text("STT_WORKER_TOKEN","").isBlank(),
+        // policySync stays false: 온통청년 lookups are live and read-only, not imported into the catalogue.
+        var out=new LinkedHashMap<String,Object>(Map.of("text",config.aiReady(),"tts",config.aiReady(),"stt",!config.text("STT_WORKER_TOKEN","").isBlank(),
             "policySync",false,"maps",config.flag("MAP_ROUTING_ENABLED")&&!config.text("KAKAO_REST_API_KEY","").isBlank(),
-            "syntheticOnly",true,"demoMode",config.flag("DEMO_MODE"),"avatar","client_bundled","live",config.aiReady());
+            "syntheticOnly",true,"demoMode",config.flag("DEMO_MODE"),"avatar","client_bundled","live",config.aiReady()));
+        out.put("youthPolicies",!config.text("YOUTH_POLICY_API_KEY","").isBlank());return out;
     }
     @PutMapping("/profile") public Program.Profile profile(@RequestHeader("Authorization") String auth,@RequestBody Program.Profile profile) {
         var s=sessions.require(auth);

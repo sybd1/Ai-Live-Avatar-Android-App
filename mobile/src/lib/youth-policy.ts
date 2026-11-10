@@ -1,0 +1,1 @@
+export const ageText=(p:{minAge:number|null;maxAge:number|null;ageUnlimited:boolean})=>p.ageUnlimited?'연령 제한 없음(공식 표기)':p.minAge===null&&p.maxAge===null?'확인 필요':`${p.minAge??'확인 필요'} ~ ${p.maxAge??'확인 필요'}세`;

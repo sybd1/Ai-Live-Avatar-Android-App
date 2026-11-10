@@ -12,6 +12,7 @@ export default function Programs() {
   return <Screen><Title>프로그램 둘러보기</Title><Body>{data?.recommendationMode==='personalized'?'확인한 관심·참여 방식으로 정렬했어요.':'공고에서 확인한 참여 절차 부담을 기준으로 안내해요. 합격 가능성을 뜻하지 않아요.'}</Body>
     <Button title="관심·참여 방식 선택" secondary onPress={()=>router.push('/preferences')} />
     <Button title="내 상태 기록·그래프" secondary onPress={()=>router.push('/history')} />
+    <Button title="청년정책 찾아보기 (온통청년)" secondary onPress={()=>router.push('/policies')} />
     <Field label="공고 제목·기관 검색" value={search} onChangeText={setSearch} maxLength={100}/><Button title={busy?'조회 중…':'목록 확인'} onPress={()=>load(search)} disabled={busy}/><ErrorText error={error}/>
     {data?.items.length===0&&<Card><Body>현재 조건에서 확인된 모집 프로그램이 없어요. 공식 공고가 아직 등록되지 않았을 수도 있어요.</Body><Button title="검색 초기화" secondary onPress={()=>{setSearch('');void load();}}/></Card>}
     {data?.items.map(({program:p,reasons,barrierComparable})=><Card key={p.id}><Body>{p.synthetic?'[가상 시연 공고] ':''}{p.title}</Body><Body>{p.organizer} · 참여 조건 확인 필요</Body>

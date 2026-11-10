@@ -42,4 +42,11 @@ class DomainTests {
         assertEquals("unknown",guard.reply(p,practice,"준비물은 무엇인가요?").kind());
         assertEquals("unknown",guard.reply(p,practice,"실제 담당자가 기다려 주나요?").kind());
     }
+    @Test void youthPolicyMappingKeepsUnknownsAndOnlyHttpsLinks(){
+        var n=tools.jackson.databind.json.JsonMapper.builder().build().readTree("{\"plcyNo\":\"2026\",\"plcyNm\":\"청년월세 지원\",\"lclsfNm\":\"주거\",\"sprtTrgtMinAge\":\"0\",\"sprtTrgtMaxAge\":\"39\",\"sprtTrgtAgeLmtYn\":\"N\"}");
+        var s=YouthPolicies.summary(n);
+        assertEquals("주거",s.get("category"));assertNull(s.get("minAge"));assertEquals(39,s.get("maxAge"));assertNull(s.get("applyPeriod"));
+        assertEquals("https://www.youthcenter.go.kr/youthPolicy/ythPlcyTotalSearch/ythPlcyDetail/2026",s.get("officialUrl"));
+        assertEquals("https://www.indie053.net",YouthPolicies.link("www.indie053.net"));assertNull(YouthPolicies.link("http://example.kr"));assertNull(YouthPolicies.link("해당없음"));
+    }
 }
