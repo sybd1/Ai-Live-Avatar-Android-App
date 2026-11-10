@@ -28,7 +28,7 @@ public class YouthPolicies {
 
     JsonNode request(Map<String,String> params) {
         if(!ready())throw ApiError.of(503,"POLICY_UNAVAILABLE","청년정책 연결이 아직 설정되지 않았어요. 온통청년에서 직접 찾아볼 수 있어요.");
-        var query=new StringBuilder("apiKeyNm=").append(URLEncoder.encode(config.text("YOUTH_POLICY_API_KEY",""),StandardCharsets.UTF_8)).append("&rtnType=json");
+        var query=new StringBuilder("apiKeyNm=").append(URLEncoder.encode(config.text("YOUTH_POLICY_API_KEY","").strip(),StandardCharsets.UTF_8)).append("&rtnType=json");
         params.forEach((k,v)->query.append('&').append(k).append('=').append(URLEncoder.encode(v,StandardCharsets.UTF_8)));
         try {
             var req=HttpRequest.newBuilder(URI.create(config.text("POLICY_PROVIDER_BASE_URL",DEFAULT_URL)+"?"+query)).timeout(Duration.ofSeconds(12)).GET().build();
