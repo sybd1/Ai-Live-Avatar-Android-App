@@ -1,9 +1,9 @@
 {
-  "file": "one_step_service-emulator.apk",
-  "bytes": 70382319,
-  "sha256": "2b53e0a93e57f9b4896c2f4d899ef8c782c300e20677edc672c55d6aad21466f",
+  "file": "first-step-mvp-phone.apk",
+  "bytes": 68738267,
+  "sha256": "efb6542a61e8c76bcfe8bb66057d3896fb6e6b6adb3a19f0fd7def5f951da710",
   "architectures": [
-    "x86_64"
+    "arm64-v8a"
   ],
   "configuredServerSecretsAbsent": true
 }
